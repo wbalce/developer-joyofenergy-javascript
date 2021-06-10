@@ -40,6 +40,8 @@ const calculateUsageCostForPreviousWeek = (readings, rate, referenceUnixtime) =>
         isWithinPreviousWeekToGivenReferenceTime(referenceUnixtime, reading.time)
     );
 
+    if (readingsFromPreviousWeek.length < 2) throw new Error("There must be at least two readings, otherwise a duration cannot be calculated.");
+
     return readingsFromPreviousWeek.length
         ? usageCost(readingsFromPreviousWeek, rate)
         : 0;

@@ -12,7 +12,8 @@ const {
 
 const {
     MOCK_UNIX_TIME_FRIDAY, 
-    MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT
+    MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT,
+    MOCK_UNIX_TIME_MONDAY
 } = require('./unix-times.constants');
 
 const { SECONDS_IN_A_DAY } = require('./times.constants');
@@ -140,6 +141,37 @@ describe("usage", () => {
         const expectedOutputRounded = roundToGivenPrecision(expectedOutput, precision);
 
         expect(usageCostForPreviousWeekRounded).toBe(expectedOutputRounded);
+    });
+
+    it("should only calculate usage cost for values in previous week", () => {
+        const precision = 100000;
+        const numberOfDaysPassedInMockReadingsLastWeek = 1;
+        const numberOfHoursPassedInMockReadingsLastWeek = numberOfDaysPassedInMockReadingsLastWeek * 24;
+        const numberOfDaysInThePast = 7;
+        const mockReadingsArray = getMockData(numberOfDaysInThePast, MOCK_UNIX_TIME_FRIDAY);
+
+        const usageCostForPreviousWeek = calculateUsageCostForPreviousWeek(
+            mockReadingsArray,
+            MOCK_METER_PARAMS_RATE,
+            MOCK_UNIX_TIME_FRIDAY
+        );
+        const usageCostForPreviousWeekRounded = roundToGivenPrecision(usageCostForPreviousWeek, precision);
+
+        const expectedOutput = MOCK_METER_PARAMS_READING / numberOfHoursPassedInMockReadingsLastWeek * MOCK_METER_PARAMS_RATE;
+        const expectedOutputRounded = roundToGivenPrecision(expectedOutput, precision);
+
+        expect(usageCostForPreviousWeekRounded).toBe(expectedOutputRounded);
+    });
+
+    it("should throw error if only one reading is present in previous week", () => {
+        const numberOfDaysInThePast = 6;
+        const mockReadingsArray = getMockData(numberOfDaysInThePast, MOCK_UNIX_TIME_FRIDAY);
+
+        expect(() => calculateUsageCostForPreviousWeek(
+            mockReadingsArray,
+            MOCK_METER_PARAMS_RATE,
+            MOCK_UNIX_TIME_FRIDAY
+        )).toThrow("There must be at least two readings, otherwise a duration cannot be calculated.");
     });
 
     it("should throw error if no price plan is given", () => {
