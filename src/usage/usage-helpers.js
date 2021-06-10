@@ -3,18 +3,18 @@ const {
   MONDAY_INTEGER
 } = require('./days.constants');
 
-const NUMBER_OF_DAYS_IN_A_WEEK = 7;
-const NUMBER_OF_SECONDS_IN_A_MINUTE = 60;
-const NUMBER_OF_MINUTES_IN_AN_HOUR = 60;
-const NUMBER_OF_HOURS_IN_A_DAY = 24;
+const {
+    SECONDS_IN_A_DAY,
+    NUMBER_OF_DAYS_IN_A_WEEK
+} = require('./times.constants');
+
 const MULTIPLE_FOR_UNIX_TIME_TO_EPOCH = 1000;
 
 const getUnixTimeByNumberOfDaysInThePast = (currentUnixTime, numberOfDaysInThePast) => {
-    const secondsIn24Hours = NUMBER_OF_SECONDS_IN_A_MINUTE * NUMBER_OF_MINUTES_IN_AN_HOUR * NUMBER_OF_HOURS_IN_A_DAY;
     const lastMidnightUnixTime = new Date(currentUnixTime * MULTIPLE_FOR_UNIX_TIME_TO_EPOCH)
         .setUTCHours(0, 0, 0, 0) / MULTIPLE_FOR_UNIX_TIME_TO_EPOCH;
 
-    return lastMidnightUnixTime - numberOfDaysInThePast * secondsIn24Hours;
+    return lastMidnightUnixTime - numberOfDaysInThePast * SECONDS_IN_A_DAY;
 };
 
 const getPastDayUnixTimeGivenReferenceUnixTime = (currentUnixTime, requiredDayInteger) => {

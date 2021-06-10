@@ -10,26 +10,22 @@ const {
     calculateUsageCostForPreviousWeek,
 } = require("./usage");
 
-const mockUnixTimes = {
-    reference: 1607686125, // Friday, 11 December 2020 11:28:45 GMT+00:00
-    previousSunday: 1607212800, // Sunday, 06 December 2020 00:00:00 GMT+00:00
-};
+const {
+    MOCK_UNIX_TIME_FRIDAY, 
+    MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT
+} = require('./unix-times.constants');
 
-const mockMeterParameters = {
-    rate: 1,
-    reading: 0.1
-};
+const { SECONDS_IN_A_DAY } = require('./times.constants');
 
-const timeConstants = {
-    secondsIn24Hours: (60 * 60 * 24)
-};
+MOCK_METER_PARAMS_RATE = 1;
+MOCK_METER_PARAMS_READING = 0.1;
 
 const getMockData = (numberOfDaysInThePast, referenceUnixTime) => {
     const numberOfDaysAgoArray = (new Array(numberOfDaysInThePast)).fill(0).map((_, index) => index);
 
     return numberOfDaysAgoArray.map(numberOfDaysAgo => ({
-        time: referenceUnixTime - timeConstants.secondsIn24Hours * numberOfDaysAgo,
-        reading: mockMeterParameters.reading
+        time: referenceUnixTime - SECONDS_IN_A_DAY * numberOfDaysAgo,
+        reading: MOCK_METER_PARAMS_READING
     }));
 };
 
@@ -127,19 +123,20 @@ describe("usage", () => {
     });
 
     it("should get usage cost for all readings in previous week for given a price plan and stored usage data", () => {
-        const mockReadingsArray = getMockData(7, mockUnixTimes.previousSunday);
         const precision = 100000;
         const numberOfDaysPassedInMockReadings = 6;
         const numberOfHoursPassedInMockReadings = numberOfDaysPassedInMockReadings * 24;
+        const numberOfDaysInThePast = 7;
 
+        const mockReadingsArray = getMockData(numberOfDaysInThePast, MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT);
         const usageCostForPreviousWeek = calculateUsageCostForPreviousWeek(
             mockReadingsArray,
-            mockMeterParameters.rate,
-            mockUnixTimes.reference
+            MOCK_METER_PARAMS_RATE,
+            MOCK_UNIX_TIME_FRIDAY
         );
         const usageCostForPreviousWeekRounded = roundToGivenPrecision(usageCostForPreviousWeek, precision);
 
-        const expectedOutput = mockMeterParameters.reading / numberOfHoursPassedInMockReadings * mockMeterParameters.rate;
+        const expectedOutput = MOCK_METER_PARAMS_READING / numberOfHoursPassedInMockReadings * MOCK_METER_PARAMS_RATE;
         const expectedOutputRounded = roundToGivenPrecision(expectedOutput, precision);
 
         expect(usageCostForPreviousWeekRounded).toBe(expectedOutputRounded);
