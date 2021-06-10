@@ -7,8 +7,12 @@ const getUsageCostForPreviousWeek = (getReadings, req) => {
 
     if (!pricePlan) throw new Error("The given meter does not have a price plan.");
 
+    const allReadingsForMeter = getReadings(meterId);
+    const rate = pricePlan.rate;
+    const currentUnixTime = ((new Date()).getTime() / 1000);
+
     const usageCostForPreviousWeek = calculateUsageCostForPreviousWeek(
-	getReadings(meterId), pricePlan.rate, ((new Date()).getTime() / 1000));
+	allReadingsForMeter, rate, currentUnixTime);
 
     return { usageCostForPreviousWeek }
 };
