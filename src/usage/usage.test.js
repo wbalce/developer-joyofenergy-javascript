@@ -13,7 +13,6 @@ const {
 const {
     MOCK_UNIX_TIME_FRIDAY, 
     MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT,
-    MOCK_UNIX_TIME_MONDAY
 } = require('./unix-times.constants');
 
 const { SECONDS_IN_A_DAY } = require('./times.constants');
