@@ -1,5 +1,5 @@
 const {
-  getLastGivenDayUnixTime,
+  getPastDayUnixTimeGivenReferenceUnixTime,
   getDayFromLastWeekUnixTime,
   getStartAndEndOfLastWeekUnixTimes,
   isWithinPreviousWeekToGivenReferenceTime
@@ -20,7 +20,7 @@ const MOCK_UNIX_TIMES_TWO_PREVIOUS_WEEKS_SUNDAY_MIDNIGHT = 1606608000;
 
 describe("usage-helpers", () => {
   it("should get unix time of the previous instance of a day from a reference unix time", () => {
-    const result = getLastGivenDayUnixTime(MOCK_UNIX_TIME_FRIDAY, SUNDAY_INTEGER);
+    const result = getPastDayUnixTimeGivenReferenceUnixTime(MOCK_UNIX_TIME_FRIDAY, SUNDAY_INTEGER);
 
     expect(result).toBe(MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT);
   });
