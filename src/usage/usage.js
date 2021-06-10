@@ -1,3 +1,7 @@
+const {
+    isWithinPreviousWeekToGivenReferenceTime
+} = require('./usage-helpers');
+
 const average = (readings) => {
     return (
         readings.reduce((prev, next) => prev + next.reading, 0) /
@@ -28,10 +32,21 @@ const usageForAllPricePlans = (pricePlans, readings) => {
     });
 };
 
+const calculateUsageCostForPreviousWeek = (readings, rate, referenceUnixtime) => {
+    const readingsFromPreviousWeek = readings.filter(reading =>
+        isWithinPreviousWeekToGivenReferenceTime(referenceUnixtime, reading.time)
+    );
+
+    return readingsFromPreviousWeek.length
+        ? usageCost(readingsFromPreviousWeek, rate)
+        : 0;
+};
+
 module.exports = {
     average,
     timeElapsedInHours,
     usage,
     usageCost,
     usageForAllPricePlans,
+    calculateUsageCostForPreviousWeek,
 };

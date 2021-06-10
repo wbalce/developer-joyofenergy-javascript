@@ -7,6 +7,7 @@ const {
     usage,
     usageCost,
     usageForAllPricePlans,
+    calculateUsageCostForPreviousWeek,
 } = require("./usage");
 
 describe("usage", () => {
@@ -96,5 +97,42 @@ describe("usage", () => {
         );
 
         expect(usageForAllPricePlansArray).toEqual(expected);
+    });
+
+    it("should get usage cost for all readings in previous week for given a price plan and stored usage data", () => {
+        const mockMeterRate = 1;
+        const mockReading = 0.1;
+        const secondsIn24Hours = 60 * 60 * 24;
+        const referenceUnixTime = 1607686125; // Friday, 11 December 2020 11:28:45 GMT+00:00
+        const previousSundayUnixTime = 1607212800; // Sunday, 06 December 2020 00:00:00 GMT+00:00
+
+        const getMockData = (numberOfDaysInThePast, referenceUnixTime) => {
+            const numberOfDaysAgoArray = (new Array(numberOfDaysInThePast)).fill(0).map((_, index) => index);
+
+            return numberOfDaysAgoArray.map(numberOfDaysAgo => ({
+                time: referenceUnixTime - secondsIn24Hours * numberOfDaysAgo,
+                reading: mockReading
+            }));
+        };
+
+        const roundToGivenPrecision = (number, precision) => {
+            return Math.round((number + Number.EPSILON) * precision) / precision;
+        };
+
+        const mockReadingsArray = getMockData(7, previousSundayUnixTime);
+
+        const usageCostForPreviousWeek = calculateUsageCostForPreviousWeek(
+            mockReadingsArray,
+            mockMeterRate,
+            referenceUnixTime
+        );
+
+        const numberOfDaysPassed = 6;
+        const numberOfHoursPassed = numberOfDaysPassed * 24;
+        const expectedOutput = mockReading / numberOfHoursPassed * mockMeterRate;
+        const usageCostForPreviousWeekRounded = roundToGivenPrecision(usageCostForPreviousWeek, 10000);
+        const expectedOutputRounded = roundToGivenPrecision(expectedOutput, 10000);
+
+        expect(usageCostForPreviousWeekRounded).toBe(expectedOutputRounded);
     });
 });
