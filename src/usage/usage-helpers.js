@@ -1,31 +1,54 @@
-const getLastGivenDayUnixTime = (currentUnixTime, requiredDayInt) => {
-    const secondsIn24Hours = 60 * 60 * 24;
+const {
+  SUNDAY_INTEGER,
+  MONDAY_INTEGER
+} = require('./days.constants');
 
-    const currentDate = new Date(currentUnixTime * 1000);
-    const currentDay = currentDate.getDay();
+const NUMBER_OF_DAYS_IN_A_WEEK = 7;
+const NUMBER_OF_SECONDS_IN_A_MINUTE = 60;
+const NUMBER_OF_MINUTES_IN_AN_HOUR = 60;
+const NUMBER_OF_HOURS_IN_A_DAY = 24;
+const MULTIPLE_FOR_UNIX_TIME_TO_EPOCH = 1000;
 
-    const lastMidnightUnixTime = currentDate.setUTCHours(0, 0, 0, 0) / 1000;
-    const difference = currentDay - requiredDayInt;
+const getUnixTimeByNumberOfDaysInThePast = (currentUnixTime, numberOfDaysInThePast) => {
+    const secondsIn24Hours = NUMBER_OF_SECONDS_IN_A_MINUTE * NUMBER_OF_MINUTES_IN_AN_HOUR * NUMBER_OF_HOURS_IN_A_DAY;
+    const lastMidnightUnixTime = new Date(currentUnixTime * MULTIPLE_FOR_UNIX_TIME_TO_EPOCH)
+        .setUTCHours(0, 0, 0, 0) / MULTIPLE_FOR_UNIX_TIME_TO_EPOCH;
+
+    return lastMidnightUnixTime - numberOfDaysInThePast * secondsIn24Hours;
+};
+
+const getPastDayUnixTimeGivenReferenceUnixTime = (currentUnixTime, requiredDayInteger) => {
+    const currentDayInteger = (new Date(currentUnixTime * MULTIPLE_FOR_UNIX_TIME_TO_EPOCH)).getUTCDay();
+
+    const difference = currentDayInteger - requiredDayInteger;
     const numberOfDaysBetween = difference < 0
-        ? (7 + difference) % 7
-        : difference % 7;
- 
-    return lastMidnightUnixTime - numberOfDaysBetween * secondsIn24Hours;
+        ? (NUMBER_OF_DAYS_IN_A_WEEK + difference) % NUMBER_OF_DAYS_IN_A_WEEK
+        : difference % NUMBER_OF_DAYS_IN_A_WEEK;
+
+    return getUnixTimeByNumberOfDaysInThePast(currentUnixTime, numberOfDaysBetween);
+};
+
+const isSunday = (unixTime) => {
+    return (new Date(unixTime * MULTIPLE_FOR_UNIX_TIME_TO_EPOCH)).getUTCDay() === SUNDAY_INTEGER;
 };
 
 const getSundayLastWeek = (currentUnixTime) => {
-    return getLastGivenDayUnixTime(currentUnixTime, 0);
+    if (isSunday(currentUnixTime)) {
+        return getUnixTimeByNumberOfDaysInThePast(currentUnixTime, NUMBER_OF_DAYS_IN_A_WEEK);
+    }
+
+    return getPastDayUnixTimeGivenReferenceUnixTime(currentUnixTime, SUNDAY_INTEGER);
 };
 
 const getDayFromLastWeekUnixTime = (currentUnixTime, requiredDayInt) => {
     const lastSunday = getSundayLastWeek(currentUnixTime);
 
-    return getLastGivenDayUnixTime(lastSunday, requiredDayInt);
+    return getPastDayUnixTimeGivenReferenceUnixTime(lastSunday, requiredDayInt);
 };
 
 const getStartAndEndOfLastWeekUnixTimes = (currentUnixTime) => {
-    const endDayUnixTime = getDayFromLastWeekUnixTime(currentUnixTime, 0);
-    const startDayUnixTime = getDayFromLastWeekUnixTime(currentUnixTime, 1);
+    const endDayUnixTime = getDayFromLastWeekUnixTime(currentUnixTime, SUNDAY_INTEGER);
+    const startDayUnixTime = getDayFromLastWeekUnixTime(currentUnixTime, MONDAY_INTEGER);
 
     return { startDayUnixTime, endDayUnixTime }
 };
@@ -37,7 +60,7 @@ const isWithinPreviousWeekToGivenReferenceTime = (currentUnixTime, referenceUnix
 };
 
 module.exports = {
-  getLastGivenDayUnixTime,
+  getPastDayUnixTimeGivenReferenceUnixTime,
   getDayFromLastWeekUnixTime,
   getStartAndEndOfLastWeekUnixTimes,
   isWithinPreviousWeekToGivenReferenceTime
