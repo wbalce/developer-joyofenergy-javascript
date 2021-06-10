@@ -3,21 +3,21 @@ const {
   MONDAY_INTEGER
 } = require('./days.constants');
 
-const NUMBER_OF_DAYS_IN_A_WEEK = 7;
-const NUMBER_OF_SECONDS_IN_A_MINUTE = 60;
-const NUMBER_OF_MINUTES_IN_AN_HOUR = 60;
-const NUMBER_OF_HOURS_IN_A_DAY = 24;
+const {
+    SECONDS_IN_A_DAY,
+    NUMBER_OF_DAYS_IN_A_WEEK
+} = require('./times.constants');
+
 const MULTIPLE_FOR_UNIX_TIME_TO_EPOCH = 1000;
 
-const getUnixTimeByNumberOfDaysInThePast = (currentUnixTime, numberOfDaysInThePast) => {
-    const secondsIn24Hours = NUMBER_OF_SECONDS_IN_A_MINUTE * NUMBER_OF_MINUTES_IN_AN_HOUR * NUMBER_OF_HOURS_IN_A_DAY;
-    const lastMidnightUnixTime = new Date(currentUnixTime * MULTIPLE_FOR_UNIX_TIME_TO_EPOCH)
-        .setUTCHours(0, 0, 0, 0) / MULTIPLE_FOR_UNIX_TIME_TO_EPOCH;
+const getUnixTimeByNumberOfDaysInThePast = (currentUnixTime, numberOfDaysInThePast, hourFineTuner) => {
+    let referenceDate = new Date(currentUnixTime * MULTIPLE_FOR_UNIX_TIME_TO_EPOCH);
+    let referenceUnixTime = hourFineTuner(referenceDate) / MULTIPLE_FOR_UNIX_TIME_TO_EPOCH;
 
-    return lastMidnightUnixTime - numberOfDaysInThePast * secondsIn24Hours;
+    return referenceUnixTime - numberOfDaysInThePast * SECONDS_IN_A_DAY;
 };
 
-const getPastDayUnixTimeGivenReferenceUnixTime = (currentUnixTime, requiredDayInteger) => {
+const getPastDayUnixTimeGivenReferenceUnixTime = (currentUnixTime, requiredDayInteger, hourFineTuner) => {
     const currentDayInteger = (new Date(currentUnixTime * MULTIPLE_FOR_UNIX_TIME_TO_EPOCH)).getUTCDay();
 
     const difference = currentDayInteger - requiredDayInteger;
@@ -25,30 +25,38 @@ const getPastDayUnixTimeGivenReferenceUnixTime = (currentUnixTime, requiredDayIn
         ? (NUMBER_OF_DAYS_IN_A_WEEK + difference) % NUMBER_OF_DAYS_IN_A_WEEK
         : difference % NUMBER_OF_DAYS_IN_A_WEEK;
 
-    return getUnixTimeByNumberOfDaysInThePast(currentUnixTime, numberOfDaysBetween);
+    return getUnixTimeByNumberOfDaysInThePast(currentUnixTime, numberOfDaysBetween, hourFineTuner);
 };
 
 const isSunday = (unixTime) => {
     return (new Date(unixTime * MULTIPLE_FOR_UNIX_TIME_TO_EPOCH)).getUTCDay() === SUNDAY_INTEGER;
 };
 
-const getSundayLastWeek = (currentUnixTime) => {
-    if (isSunday(currentUnixTime)) {
-        return getUnixTimeByNumberOfDaysInThePast(currentUnixTime, NUMBER_OF_DAYS_IN_A_WEEK);
-    }
-
-    return getPastDayUnixTimeGivenReferenceUnixTime(currentUnixTime, SUNDAY_INTEGER);
+const fineTuneHourToZero = (dateObject) => {
+    return dateObject.setUTCHours(0, 0, 0, 0);
 };
 
-const getDayFromLastWeekUnixTime = (currentUnixTime, requiredDayInt) => {
+const fineTuneHourToOneSecondBeforeTheNextDay = (dateObject) => {
+    return dateObject.setUTCHours(23, 59, 59, 0);
+};
+
+const getSundayLastWeek = (currentUnixTime) => {
+    if (isSunday(currentUnixTime)) {
+        return getUnixTimeByNumberOfDaysInThePast(currentUnixTime, NUMBER_OF_DAYS_IN_A_WEEK, fineTuneHourToOneSecondBeforeTheNextDay);
+    }
+
+    return getPastDayUnixTimeGivenReferenceUnixTime(currentUnixTime, SUNDAY_INTEGER, fineTuneHourToOneSecondBeforeTheNextDay);
+};
+
+const getDayFromLastWeekUnixTime = (currentUnixTime, requiredDayInt, hourFineTuner) => {
     const lastSunday = getSundayLastWeek(currentUnixTime);
 
-    return getPastDayUnixTimeGivenReferenceUnixTime(lastSunday, requiredDayInt);
+    return getPastDayUnixTimeGivenReferenceUnixTime(lastSunday, requiredDayInt, hourFineTuner);
 };
 
 const getStartAndEndOfLastWeekUnixTimes = (currentUnixTime) => {
-    const endDayUnixTime = getDayFromLastWeekUnixTime(currentUnixTime, SUNDAY_INTEGER);
-    const startDayUnixTime = getDayFromLastWeekUnixTime(currentUnixTime, MONDAY_INTEGER);
+    const endDayUnixTime = getDayFromLastWeekUnixTime(currentUnixTime, SUNDAY_INTEGER, fineTuneHourToOneSecondBeforeTheNextDay);
+    const startDayUnixTime = getDayFromLastWeekUnixTime(currentUnixTime, MONDAY_INTEGER, fineTuneHourToZero);
 
     return { startDayUnixTime, endDayUnixTime }
 };
@@ -63,5 +71,6 @@ module.exports = {
   getPastDayUnixTimeGivenReferenceUnixTime,
   getDayFromLastWeekUnixTime,
   getStartAndEndOfLastWeekUnixTimes,
-  isWithinPreviousWeekToGivenReferenceTime
+  isWithinPreviousWeekToGivenReferenceTime,
+  fineTuneHourToZero
 };

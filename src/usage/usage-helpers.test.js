@@ -2,7 +2,8 @@ const {
   getPastDayUnixTimeGivenReferenceUnixTime,
   getDayFromLastWeekUnixTime,
   getStartAndEndOfLastWeekUnixTimes,
-  isWithinPreviousWeekToGivenReferenceTime
+  isWithinPreviousWeekToGivenReferenceTime,
+  fineTuneHourToZero
 } = require('./usage-helpers');
 
 const {
@@ -10,23 +11,26 @@ const {
   MONDAY_INTEGER
 } = require('./days.constants');
 
-const MOCK_UNIX_TIME_SUNDAY = 1607817600;
-const MOCK_UNIX_TIME_FRIDAY = 1607686125; // Friday, 11 December 2020 11:28:45 GMT+00:00
-const MOCK_UNIX_TIME_MONDAY = 1607299200;
-const MOCK_UNIX_TIMES_PREVIOUS_WEEK_FRIDAY_MIDNIGHT = 1607040000; 
-const MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT = 1607212800;
-const MOCK_UNIX_TIMES_PREVIOUS_WEEK_MONDAY_MIDNIGHT = 1606694400;
-const MOCK_UNIX_TIMES_TWO_PREVIOUS_WEEKS_SUNDAY_MIDNIGHT = 1606608000;
+const {
+    MOCK_UNIX_TIME_SUNDAY,
+    MOCK_UNIX_TIME_FRIDAY,
+    MOCK_UNIX_TIME_MONDAY,
+    MOCK_UNIX_TIMES_PREVIOUS_WEEK_FRIDAY_MIDNIGHT, 
+    MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT,
+    MOCK_UNIX_TIMES_PREVIOUS_WEEK_MONDAY_MIDNIGHT,
+    MOCK_UNIX_TIMES_TWO_PREVIOUS_WEEKS_SUNDAY_MIDNIGHT,
+    MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY
+} = require('./unix-times.constants');
 
 describe("usage-helpers", () => {
   it("should get unix time of the previous instance of a day from a reference unix time", () => {
-    const result = getPastDayUnixTimeGivenReferenceUnixTime(MOCK_UNIX_TIME_FRIDAY, SUNDAY_INTEGER);
+    const result = getPastDayUnixTimeGivenReferenceUnixTime(MOCK_UNIX_TIME_FRIDAY, SUNDAY_INTEGER, fineTuneHourToZero);
 
     expect(result).toBe(MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT);
   });
 
   it("should get given day from previous week of a reference unix time", () => {
-    const result = getDayFromLastWeekUnixTime(MOCK_UNIX_TIME_FRIDAY, MONDAY_INTEGER);
+    const result = getDayFromLastWeekUnixTime(MOCK_UNIX_TIME_FRIDAY, MONDAY_INTEGER, fineTuneHourToZero);
 
     expect(result).toBe(MOCK_UNIX_TIMES_PREVIOUS_WEEK_MONDAY_MIDNIGHT);
   });
@@ -36,7 +40,7 @@ describe("usage-helpers", () => {
  
     expect(result).toMatchObject({
       startDayUnixTime: MOCK_UNIX_TIMES_PREVIOUS_WEEK_MONDAY_MIDNIGHT,
-      endDayUnixTime: MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT
+      endDayUnixTime: MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY
     });
   });
 
@@ -45,7 +49,7 @@ describe("usage-helpers", () => {
 
     expect(result).toMatchObject({
       startDayUnixTime: MOCK_UNIX_TIMES_PREVIOUS_WEEK_MONDAY_MIDNIGHT,
-      endDayUnixTime: MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT
+      endDayUnixTime: MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY
     });
   });
 
@@ -54,7 +58,7 @@ describe("usage-helpers", () => {
  
     expect(result).toMatchObject({
       startDayUnixTime: MOCK_UNIX_TIMES_PREVIOUS_WEEK_MONDAY_MIDNIGHT,
-      endDayUnixTime: MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT
+      endDayUnixTime: MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY
     });
   });
 
@@ -86,5 +90,11 @@ describe("usage-helpers", () => {
     const result = isWithinPreviousWeekToGivenReferenceTime(MOCK_UNIX_TIME_FRIDAY, MOCK_UNIX_TIMES_TWO_PREVIOUS_WEEKS_SUNDAY_MIDNIGHT);
 
     expect(result).toBe(false);
+  });
+
+  it("should return true if given a second before midnight of the previous monday unix time", () => {
+    const result = isWithinPreviousWeekToGivenReferenceTime(MOCK_UNIX_TIME_FRIDAY, MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY);
+
+    expect(result).toBe(true);
   });
 });
