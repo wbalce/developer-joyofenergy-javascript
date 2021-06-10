@@ -151,6 +151,26 @@ describe("usage", () => {
             mockReadingsArray,
             meterRate,
             MOCK_UNIX_TIME_FRIDAY
-        )).toThrow();
+        )).toThrow("Meter rate was not supplied.");
+    });
+
+    it("should throw error if no readings are given", () => {
+        const mockReadingsArray = null;
+
+        expect(() => calculateUsageCostForPreviousWeek(
+            mockReadingsArray,
+            MOCK_METER_PARAMS_RATE,
+            MOCK_UNIX_TIME_FRIDAY
+        )).toThrow("Readings were not supplied.");
+    });
+
+    it("should throw error if no an empty array is passed", () => {
+        const mockReadingsArray = [];
+
+        expect(() => calculateUsageCostForPreviousWeek(
+            mockReadingsArray,
+            MOCK_METER_PARAMS_RATE,
+            MOCK_UNIX_TIME_FRIDAY
+        )).toThrow("Readings were not supplied.");
     });
 });

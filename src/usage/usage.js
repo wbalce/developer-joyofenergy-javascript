@@ -34,6 +34,7 @@ const usageForAllPricePlans = (pricePlans, readings) => {
 
 const calculateUsageCostForPreviousWeek = (readings, rate, referenceUnixtime) => {
     if (!rate) throw new Error("Meter rate was not supplied.");
+    if (!readings || !readings.length) throw new Error("Readings were not supplied.");
 
     const readingsFromPreviousWeek = readings.filter(reading =>
         isWithinPreviousWeekToGivenReferenceTime(referenceUnixtime, reading.time)
