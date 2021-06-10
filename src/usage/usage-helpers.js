@@ -24,7 +24,15 @@ const getDayFromLastWeekUnixTime = (currentUnixTime, requiredDayInt) => {
     return getLastGivenDayUnixTime(lastSunday, requiredDayInt);
 };
 
+const getStartAndEndOfLastWeekUnixTimes = (currentUnixTime) => {
+    const endDayUnixTime = getDayFromLastWeekUnixTime(currentUnixTime, 0);
+    const startDayUnixTime = getDayFromLastWeekUnixTime(currentUnixTime, 1);
+
+    return { startDayUnixTime, endDayUnixTime }
+};
+
 module.exports = {
   getLastGivenDayUnixTime,
-  getDayFromLastWeekUnixTime
+  getDayFromLastWeekUnixTime,
+  getStartAndEndOfLastWeekUnixTimes
 };
