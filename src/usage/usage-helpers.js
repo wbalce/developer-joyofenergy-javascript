@@ -13,7 +13,6 @@ const getLastGivenDayUnixTime = (currentUnixTime, requiredDayInt) => {
     return lastMidnightUnixTime - numberOfDaysBetween * secondsIn24Hours;
 };
 
-
 const getSundayLastWeek = (currentUnixTime) => {
     return getLastGivenDayUnixTime(currentUnixTime, 0);
 };
