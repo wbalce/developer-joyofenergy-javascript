@@ -30,6 +30,8 @@ const getMockData = (numberOfDaysInThePast, referenceUnixTime) => {
     }));
 };
 
+const PRECISION = 100000;
+
 const roundToGivenPrecision = (number, precision) => {
     return Math.round((number + Number.EPSILON) * precision) / precision;
 };
@@ -124,7 +126,6 @@ describe("usage", () => {
     });
 
     it("should get usage cost for all readings in previous week for given a price plan and stored usage data", () => {
-        const precision = 100000;
         const numberOfDaysPassedInMockReadings = 6;
         const numberOfHoursPassedInMockReadings = numberOfDaysPassedInMockReadings * 24;
         const numberOfDaysInThePast = 7;
@@ -135,16 +136,15 @@ describe("usage", () => {
             MOCK_METER_PARAMS_RATE,
             MOCK_UNIX_TIME_FRIDAY
         );
-        const usageCostForPreviousWeekRounded = roundToGivenPrecision(usageCostForPreviousWeek, precision);
+        const usageCostForPreviousWeekRounded = roundToGivenPrecision(usageCostForPreviousWeek, PRECISION);
 
         const expectedOutput = MOCK_METER_PARAMS_READING / numberOfHoursPassedInMockReadings * MOCK_METER_PARAMS_RATE;
-        const expectedOutputRounded = roundToGivenPrecision(expectedOutput, precision);
+        const expectedOutputRounded = roundToGivenPrecision(expectedOutput, PRECISION);
 
         expect(usageCostForPreviousWeekRounded).toBe(expectedOutputRounded);
     });
 
     it("should only calculate usage cost for values in previous week", () => {
-        const precision = 100000;
         const numberOfDaysPassedInMockReadingsLastWeek = 1;
         const numberOfHoursPassedInMockReadingsLastWeek = numberOfDaysPassedInMockReadingsLastWeek * 24;
         const numberOfDaysInThePast = 7;
@@ -155,10 +155,10 @@ describe("usage", () => {
             MOCK_METER_PARAMS_RATE,
             MOCK_UNIX_TIME_FRIDAY
         );
-        const usageCostForPreviousWeekRounded = roundToGivenPrecision(usageCostForPreviousWeek, precision);
+        const usageCostForPreviousWeekRounded = roundToGivenPrecision(usageCostForPreviousWeek, PRECISION);
 
         const expectedOutput = MOCK_METER_PARAMS_READING / numberOfHoursPassedInMockReadingsLastWeek * MOCK_METER_PARAMS_RATE;
-        const expectedOutputRounded = roundToGivenPrecision(expectedOutput, precision);
+        const expectedOutputRounded = roundToGivenPrecision(expectedOutput, PRECISION);
 
         expect(usageCostForPreviousWeekRounded).toBe(expectedOutputRounded);
     });
