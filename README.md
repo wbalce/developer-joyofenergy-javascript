@@ -361,3 +361,35 @@ Example output
   }
 ]
 ```
+
+### View Last Week's Usage Cost
+
+Endpoint
+
+```text
+GET /usage/cost/last-week/<smartMeterId>
+```
+
+Parameters
+
+| Parameter      | Description                              |
+| -------------- | ---------------------------------------- |
+| `smartMeterId` | One of the smart meters' id listed above |
+
+Weeks are defined to begin on Monday 0:00 AM, and end on Sunday 11:59 PM, UTC.
+Getting usage cost for last week requires that at least 2 readings have been recorded for the previous week. Otherwise an error will be shown.
+If the meter is not associated with a price plan, an error will be shown.
+
+Retrieving readings using CURL
+
+```console
+$ curl "http://localhost:8080/usage/cost/last-week/smart-meter-0"
+```
+
+Example output
+
+```json
+{
+  "usageCostForPreviousWeek": 0.014368956133185364
+}
+```
