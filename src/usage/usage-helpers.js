@@ -31,8 +31,15 @@ const getStartAndEndOfLastWeekUnixTimes = (currentUnixTime) => {
     return { startDayUnixTime, endDayUnixTime }
 };
 
+const isWithinPreviousWeekToGivenReferenceTime = (currentUnixTime, referenceUnixTime) => {
+    const { startDayUnixTime, endDayUnixTime } = getStartAndEndOfLastWeekUnixTimes(currentUnixTime);
+
+    return referenceUnixTime >= startDayUnixTime && referenceUnixTime <= endDayUnixTime;
+};
+
 module.exports = {
   getLastGivenDayUnixTime,
   getDayFromLastWeekUnixTime,
-  getStartAndEndOfLastWeekUnixTimes
+  getStartAndEndOfLastWeekUnixTimes,
+  isWithinPreviousWeekToGivenReferenceTime
 };
