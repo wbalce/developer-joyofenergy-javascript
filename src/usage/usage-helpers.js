@@ -1,5 +1,8 @@
-const SUNDAY_INTEGER = 0;
-const MONDAY_INTEGER = 1;
+const {
+  SUNDAY_INTEGER,
+  MONDAY_INTEGER
+} = require('./days.constants');
+
 const NUMBER_OF_DAYS_IN_A_WEEK = 7;
 const MULTIPLE_FOR_UNIX_TIME_TO_EPOCH = 1000;
 

@@ -5,6 +5,11 @@ const {
   isWithinPreviousWeekToGivenReferenceTime
 } = require('./usage-helpers');
 
+const {
+  SUNDAY_INTEGER,
+  MONDAY_INTEGER
+} = require('./days.constants');
+
 const MOCK_UNIX_TIME_SUNDAY = 1607817600;
 const MOCK_UNIX_TIME_FRIDAY = 1607686125; // Friday, 11 December 2020 11:28:45 GMT+00:00
 const MOCK_UNIX_TIME_MONDAY = 1607299200;
@@ -12,9 +17,6 @@ const MOCK_UNIX_TIMES_PREVIOUS_WEEK_FRIDAY_MIDNIGHT = 1607040000;
 const MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT = 1607212800;
 const MOCK_UNIX_TIMES_PREVIOUS_WEEK_MONDAY_MIDNIGHT = 1606694400;
 const MOCK_UNIX_TIMES_TWO_PREVIOUS_WEEKS_SUNDAY_MIDNIGHT = 1606608000;
-
-const SUNDAY_INTEGER = 0;
-const MONDAY_INTEGER = 1;
 
 describe("usage-helpers", () => {
   it("should get unix time of the previous instance of a day from a reference unix time", () => {
