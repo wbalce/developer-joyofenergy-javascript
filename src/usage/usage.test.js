@@ -17,8 +17,8 @@ const {
 
 const { SECONDS_IN_A_DAY } = require('./times.constants');
 
-MOCK_METER_PARAMS_RATE = 1;
-MOCK_METER_PARAMS_READING = 0.1;
+const MOCK_METER_PARAMS_RATE = 1;
+const MOCK_METER_PARAMS_READING = 0.1;
 
 const getMockData = (numberOfDaysInThePast, referenceUnixTime) => {
     const numberOfDaysAgoArray = (new Array(numberOfDaysInThePast)).fill(0).map((_, index) => index);
