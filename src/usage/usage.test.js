@@ -127,8 +127,8 @@ describe("usage", () => {
         const numberOfDaysPassedInMockReadings = 6;
         const numberOfHoursPassedInMockReadings = numberOfDaysPassedInMockReadings * 24;
         const numberOfDaysInThePast = 7;
-
         const mockReadingsArray = getMockData(numberOfDaysInThePast, MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT);
+
         const usageCostForPreviousWeek = calculateUsageCostForPreviousWeek(
             mockReadingsArray,
             MOCK_METER_PARAMS_RATE,
@@ -140,5 +140,17 @@ describe("usage", () => {
         const expectedOutputRounded = roundToGivenPrecision(expectedOutput, precision);
 
         expect(usageCostForPreviousWeekRounded).toBe(expectedOutputRounded);
+    });
+
+    it("should throw error if no price plan is given", () => {
+        const numberOfDaysInThePast = 7;
+        const mockReadingsArray = getMockData(numberOfDaysInThePast, MOCK_UNIX_TIMES_PREVIOUS_WEEK_SUNDAY_MIDNIGHT);
+        const meterRate = null;
+
+        expect(() => calculateUsageCostForPreviousWeek(
+            mockReadingsArray,
+            meterRate,
+            MOCK_UNIX_TIME_FRIDAY
+        )).toThrow();
     });
 });
